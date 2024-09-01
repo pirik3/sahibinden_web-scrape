@@ -15,10 +15,6 @@ import undetected_chromedriver as uc
 from seleniumbase import Driver
 from seleniumwire import webdriver
 
-# kütüphaneleri kontrol eder, yoksa yükler
-# os.system("pip install selenium")
-# os.system("pip install openpyxl")
-
 print(""" 
 
          d8b 888    888               888                                                d88P        d8b         d8b 888       .d8888b.  
@@ -65,16 +61,16 @@ chrome_options.add_argument('--disable-extensions')
 chrome_options.add_argument('--disable-gpu')
 chrome_options.add_argument('--blink-settings=imagesEnabled=false')
 
-#driver = uc.Chrome(use_subprocess=True, options=chrome_options)
+# driver = uc.Chrome(use_subprocess=True, options=chrome_options)
 driver = Driver(uc=True)
-#driver = uc.Chrome(options=chrome_options,seleniumwire_options=proxy_options)
+# driver = uc.Chrome(options=chrome_options,seleniumwire_options=proxy_options)
 # driver = uc.Chrome(headless=True)
-#driver = webdriver.Chrome(options=chrome_options)
+# driver = webdriver.Chrome(options=chrome_options)
 # driver = webdriver.Firefox()
-#driver = webdriver.Chrome() # Web tarayıcıyı aç
+# driver = webdriver.Chrome() # Web tarayıcıyı aç
 # driver.get("https://www.sahibinden.com/satilik-daire?pagingSize=50")
 driver.get("https://www.sahibinden.com/satilik-daire/izmir-buca-iscievleri-dicle-mah.?pagingSize=50") # kendi bolgenizde veya loglamak istediginiz bolgenin linki.
-# driver.save_screenshot("datacamp.png")
+
 # Bilgileri çek
 time.sleep(30) # sayfanin yuklenmesini icin beklenilmesi gerek.
 
@@ -155,7 +151,7 @@ while True:
 
         # Verileri excel dosyasına ekle
 
-        kolon.append([ilan, ilan_id, m2, oda, fiyat, ilan,ilan_tarihi_gun_yil, il_ilce_bilgisi_yazi])
+        kolon.append([ilan, ilan_id, m2, oda, fiyat, ilan, ilan_tarihi_gun_yil, il_ilce_bilgisi_yazi])
 
     print("Sonraki sayfaya geçiş yapılıyor...")
 
