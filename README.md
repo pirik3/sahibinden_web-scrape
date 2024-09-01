@@ -1,1 +1,1 @@
-** CludFlare, Human verification'a takiliyor.
+** CludFlare, Human verification'a takiliyor bazen.
