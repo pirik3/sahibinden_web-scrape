@@ -73,7 +73,7 @@ driver = Driver(uc=True)
 # driver = webdriver.Firefox()
 #driver = webdriver.Chrome() # Web tarayıcıyı aç
 # driver.get("https://www.sahibinden.com/satilik-daire?pagingSize=50")
-driver.get("https://www.sahibinden.com/satilik-daire/izmir-buca-iscievleri-dicle-mah.?pagingSize=50")
+driver.get("https://www.sahibinden.com/satilik-daire/izmir-buca-iscievleri-dicle-mah.?pagingSize=50") # kendi bolgenizde veya loglamak istediginiz bolgenin linki.
 # driver.save_screenshot("datacamp.png")
 # Bilgileri çek
 time.sleep(30) # sayfanin yuklenmesini icin beklenilmesi gerek.
