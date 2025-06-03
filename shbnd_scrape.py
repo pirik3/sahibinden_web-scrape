@@ -3,7 +3,6 @@ import pyfiglet
 import time
 import random
 from selenium import webdriver
-from openpyxl import Workbook
 import os
 import sys
 import io
@@ -14,7 +13,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import NoSuchElementException
-from chromedriver_py import binary_path  # this will get you the path variab
+from chromedriver_py import binary_path 
 import undetected_chromedriver as uc
 from seleniumbase import Driver
 from seleniumwire import webdriver
