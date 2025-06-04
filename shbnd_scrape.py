@@ -9,23 +9,28 @@ import undetected_chromedriver as uc
 from seleniumbase import Driver
 from seleniumwire import webdriver
 import sqlite3
+from datetime import datetime
+
+date_scraped = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 conn = sqlite3.connect("ilanlar_ev.db")
 cursor = conn.cursor()
 
-# Create table if it doesn't exist
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS ilanlar (
-    ilan_id TEXT PRIMARY KEY,
+    ilan_id TEXT NOT NULL,
     title TEXT,
     price TEXT,
-    date TEXT,
+    ilan_date TEXT,
     city TEXT,
-    town TEXT
-)
+    town TEXT,
+    date_scraped TEXT NOT NULL,
+    PRIMARY KEY (ilan_id, date_scraped)
+);
 """)
 conn.commit()
+
 
 
 
@@ -104,18 +109,16 @@ while True:
                 
             print(f"ID: {ilan_id}, Title: {ilan_title}, Price: {ilan_price}, Date: {ilan_date}, City: {ilan_city}, Town: {ilan_town}")
 
-                
-            # database ye ekle
             if ilan_id != "Veri Yok":
                 try:
                     cursor.execute("""
-                    INSERT OR IGNORE INTO ilanlar (ilan_id, title, price, date, city, town)
-                    VALUES (?, ?, ?, ?, ?, ?)""",
-                    (ilan_id, ilan_title, ilan_price, ilan_date, ilan_city, ilan_town))
+                        INSERT OR IGNORE INTO ilanlar (ilan_id, title, price, ilan_date, city, town, date_scraped)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """, (ilan_id, ilan_title, ilan_price, ilan_date, ilan_city, ilan_town, date_scraped))
                     conn.commit()
-                    print(f"[good] {ilan_id} kaydedildi.")
+                    print(f"[✓] {ilan_id} kaydedildi.")
                 except Exception as e:
-                    print(f"[bad] hata: {e}")
+                    print(f"[!] DB hatası: {e}")
 
         # Next page
         sayfa_numarasi += 50
