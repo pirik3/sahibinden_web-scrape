@@ -64,10 +64,7 @@ while True:
         time.sleep(5)
         
         for i in range(1, 51):
-            try:
-                if i == 50:
-                    sayfa_numarasi += 50
-
+            try:                    
                 id_element = driver.find_element(By.XPATH, f"/html/body/div[5]/div[3]/form/div[1]/div[3]/table/tbody/tr[{i}]/td[2]/div[1]")
                 ilan_id = id_element.text.strip().lstrip('#')
             except:
