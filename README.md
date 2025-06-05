@@ -1,4 +1,4 @@
-- Use a proxy or VPN to bypass bot detection mechanisms.
+- Use a proxy or VPN to bypass bot detection.
   - Note: Cloudflare protection may still block some scraping attempts. Additional measures (like headless browser spoofing or delay tactics) may be required.
     
 - Listings are typically limited to 20 pages, with 50 listings per page, allowing a maximum of ~1000 listings per scan.
