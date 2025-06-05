@@ -13,23 +13,34 @@ from datetime import datetime
 
 date_scraped = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
 
+
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 conn = sqlite3.connect("ilanlar_ev.db")
 cursor = conn.cursor()
 
+# ilanlar tablosu: sabit bilgiler
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS ilanlar (
-    ilan_id TEXT NOT NULL,
+    ilan_id TEXT PRIMARY KEY,
     title TEXT,
-    price TEXT,
-    ilan_date TEXT,
     city TEXT,
     town TEXT,
-    date_scraped TEXT NOT NULL,
-    PRIMARY KEY (ilan_id, date_scraped)
+    ilan_date TEXT
 );
 """)
+
+# fiyat_takibi tablosu: dinamik bilgiler (deneme amacli)
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS fiyat_takibi (
+    ilan_id TEXT,
+    price TEXT,
+    date_scraped TEXT,
+    FOREIGN KEY (ilan_id) REFERENCES ilanlar(ilan_id)
+);
+""")
+
 conn.commit()
+
 
 
 
@@ -54,6 +65,7 @@ chrome_options.add_argument('--remote-debugging-port=9222')
 chrome_options.add_argument('--disable-extensions')
 chrome_options.add_argument('--disable-gpu')
 chrome_options.add_argument('--blink-settings=imagesEnabled=false')
+chrome_options.add_argument('--headless')
 
 driver = Driver(uc=True)
 
@@ -109,21 +121,44 @@ while True:
                 
             print(f"ID: {ilan_id}, Title: {ilan_title}, Price: {ilan_price}, Date: {ilan_date}, City: {ilan_city}, Town: {ilan_town}")
 
-            if ilan_id != "Veri Yok":
+            # Fiyat değişimi kontrolü
+            cursor.execute("SELECT price FROM fiyat_takibi WHERE ilan_id = ? ORDER BY date_scraped DESC LIMIT 1", (ilan_id,))
+            son_kayit = cursor.fetchone()
+                
+            if son_kayit and son_kayit[0] == ilan_price:
+                print(f"[~] {ilan_id} fiyatı değişmedi, atlandı.")
+            else:
+                # ilanlar tablosunda ilan var mı kontrolü
+                cursor.execute("SELECT 1 FROM ilanlar WHERE ilan_id = ?", (ilan_id,))
+                exists = cursor.fetchone()
+
+                if not exists:
+                    # Yeni ilan: hem ilanlar hem fiyat_takibi tablosuna ekle
+                    try:
+                        cursor.execute("""
+                            INSERT INTO ilanlar (ilan_id, title, city, town, ilan_date)
+                            VALUES (?, ?, ?, ?, ?)
+                        """, (ilan_id, ilan_title, ilan_city, ilan_town, ilan_date))
+
+                        print(f"[+] Yeni ilan eklendi: {ilan_id}")
+                    except Exception as e:
+                        print(f"[!] ilanlar tablosuna ekleme hatası: {e}")
+
+                # fiyat_takibi tablosuna yeni fiyatı kaydet
                 try:
                     cursor.execute("""
-                        INSERT OR IGNORE INTO ilanlar (ilan_id, title, price, ilan_date, city, town, date_scraped)
-                        VALUES (?, ?, ?, ?, ?, ?, ?)
-                    """, (ilan_id, ilan_title, ilan_price, ilan_date, ilan_city, ilan_town, date_scraped))
+                        INSERT INTO fiyat_takibi (ilan_id, price, date_scraped)
+                        VALUES (?, ?, ?)
+                    """, (ilan_id, ilan_price, date_scraped))
                     conn.commit()
-                    print(f"[✓] {ilan_id} kaydedildi.")
+                    print(f"[✓] Fiyat kaydedildi: {ilan_id} - {ilan_price}")
                 except Exception as e:
-                    print(f"[!] DB hatası: {e}")
+                    print(f"[!] fiyat_takibi hatası: {e}")
 
         # Next page
         sayfa_numarasi += 50
 
-        if sayfa_numarasi > 2500:  # 50 pages max
+        if sayfa_numarasi > 950:  # her 50 bir adet sayfa numarasina esit ve her iki 50 ve katlari degerleri arasinda 50 adet sayfa var.
             print("Maksimum sayfa sayısına ulaşıldı.")
             break
         
